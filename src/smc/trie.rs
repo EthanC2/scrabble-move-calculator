@@ -24,12 +24,7 @@ impl Trie {
     pub fn add_word(&mut self, word: &str) {
         let mut current = &mut self.root;
         for c in word.chars() {
-            //todo: refactor using '.entry_or(TrieNode::new())'
-            if !current.children.contains_key(&c) {
-                current.children.insert(c, TrieNode::new());
-            }
-            
-            current = current.children.get_mut(&c).unwrap();
+            current = current.children.entry(c).or_insert(TrieNode::new());
         }
 
         current.is_word = true;
@@ -43,16 +38,14 @@ impl Trie {
         let mut current = node;
         
         for (i, c) in word.chars().enumerate() {
-            if c == '?' {
-                return current.children
+            match c {
+                '?' => return current.children
                        .values()
-                       .any(|node| self.internal_search(&word[(i+1)..], node));
-            } else {
-                if !node.children.contains_key(&c) {
-                    return false;
+                       .any(|node| self.internal_search(&word[(i+1)..], node)),
+                _ => match current.children.get(&c) {
+                    Some(child) => current = child,
+                    None => return false,
                 }
-                
-                current = current.children.get(&c).unwrap();
             }
         }
         

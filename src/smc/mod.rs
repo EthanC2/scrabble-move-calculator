@@ -34,6 +34,7 @@ pub struct ScrabbleMoveCalculator {
 }
 
 impl ScrabbleMoveCalculator {
+    //Constructors
     pub fn new() -> Self {
         ScrabbleMoveCalculator{dictionary: Trie::new()}
     }
@@ -44,7 +45,9 @@ impl ScrabbleMoveCalculator {
         Ok(dict)
     }
 
+    //Adding to the dictionary
     pub fn add(&mut self, word: &str) {
+        //Todo: force lowercase conversion
         self.dictionary.add_word(word);
     }
 
@@ -59,6 +62,33 @@ impl ScrabbleMoveCalculator {
         Ok(())
     }
 
+    //Generating plays
+    pub fn generate_plays(&self, hand: &str, sort: bool) -> Vec<(String, u32)> {
+        let mut playable_words = Vec::new();
+
+        for word in combinatorics::permutations(hand) {
+            if self.dictionary.contains(&word) {
+                let point_value = ScrabbleMoveCalculator::calculate_points(&word);
+                playable_words.push( (word, point_value) );
+            }
+        }
+
+        for word in combinatorics::power_set(hand) {
+            if self.dictionary.contains(&word) {
+                let point_value = ScrabbleMoveCalculator::calculate_points(&word);
+                playable_words.push( (word, point_value) );
+            }
+        }
+
+        //Sort words by point value, if requested
+        if sort {
+            playable_words.sort_unstable_by(|a, b| (b.1).partial_cmp(&a.1).unwrap());
+        }
+
+        playable_words
+    }
+
+    //Misc
     pub fn contains(&self, word: &str) -> bool {
         self.dictionary.contains(word)
     }
