@@ -8,7 +8,7 @@ pub fn power_set(word: &str) -> Vec<String> {
 
     //Generate the power set of the string
     //CAREFUL: 'for i in 0..powset_size' changed to 'for i in 1..powset_size-1'
-    //          skip empty set and prevent overlap with permutations
+    //          skip empty set and prevent overlap with 1st value from permutations
     for i in 1..powset_size-1 {  
         for j in 0..powset_size {
             if i & (1 << j) != 0 {

@@ -24,15 +24,18 @@ impl Trie {
     pub fn add_word(&mut self, word: &str) {
         let mut current = &mut self.root;
         for c in word.chars() {
+            //todo: refactor using '.entry_or(TrieNode::new())'
             if !current.children.contains_key(&c) {
                 current.children.insert(c, TrieNode::new());
             }
             
             current = current.children.get_mut(&c).unwrap();
         }
+
+        current.is_word = true;
     }
     
-    pub fn search(&self, word: &str) -> bool {
+    pub fn contains(&self, word: &str) -> bool {
         return self.internal_search(&word, &self.root);
     }
     
