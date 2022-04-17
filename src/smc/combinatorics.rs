@@ -7,12 +7,10 @@ pub fn power_set(word: &str) -> Vec<String> {
     let mut buffer = String::with_capacity(*len);
 
     //Generate the power set of the string
-    //CAREFUL: 'for i in 0..powset_size' changed to 'for i in 1..powset_size-1'
-    //          skip empty set and prevent overlap with 1st value from permutations
-    for i in 1..powset_size-1 {  
+    for i in 1..powset_size {       //Skip the empty set
         for j in 0..powset_size {
-            let lshift = usize::checked_shl(1, j as u32).unwrap_or_default();
-            if i & lshift != 0 {    //if i & (1 << j) != 0 {
+            //let lshift = usize::checked_shl(1, j as u32).unwrap_or_default();
+            if i & (1 << j) != 0 {    //if i & (1 << j) != 0 {
                 buffer.push(word.chars().nth(j).unwrap());
             }
         }

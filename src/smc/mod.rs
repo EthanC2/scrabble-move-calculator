@@ -1,5 +1,5 @@
 //Modules
-mod combinatorics;
+pub mod combinatorics;
 mod trie;
 
 //Standard library
@@ -63,28 +63,18 @@ impl ScrabbleMoveCalculator {
     }
 
     //Generating plays
-    pub fn generate_plays(&self, hand: &str, sort: bool) -> Vec<(String, u32)> {
+    pub fn generate_plays(&self, hand: &str) -> Vec<(String, u32)> {
         let mut playable_words = Vec::new();
 
-        for word in combinatorics::permutations(hand) {
-            if self.dictionary.contains(&word) {
-                let point_value = ScrabbleMoveCalculator::calculate_points(&word);
-                playable_words.push( (word, point_value) );
+        for set in combinatorics::power_set(hand) {
+            for word in combinatorics::permutations(&set) {
+                if self.dictionary.contains(&word) {
+                    let point_value = ScrabbleMoveCalculator::calculate_points(&word);
+                    playable_words.push( (word, point_value) );
+                }
             }
         }
-
-        for word in combinatorics::power_set(hand) {
-            if self.dictionary.contains(&word) {
-                let point_value = ScrabbleMoveCalculator::calculate_points(&word);
-                playable_words.push( (word, point_value) );
-            }
-        }
-
-        //Sort words by point value, if requested
-        if sort {
-            playable_words.sort_unstable_by(|a, b| (b.1).partial_cmp(&a.1).unwrap());
-        }
-
+        
         playable_words
     }
 
