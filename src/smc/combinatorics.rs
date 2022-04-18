@@ -1,3 +1,11 @@
+/*
+    WARNING! Overflowing left shift is undefined behavior on modern
+    CPUs. Either the CPU will return 0 or compute the shift modulo the
+    size of the word. To ensure consistency on all platforms, we have
+    chosen to return 0 as '.unwrap_or_default()'
+
+    Reference: https://users.rust-lang.org/t/intentionally-overflow-on-shift/11859/2
+*/
 pub fn power_set(word: &str) -> Vec<String> {
     let len = &word.chars().count();
 
@@ -9,8 +17,8 @@ pub fn power_set(word: &str) -> Vec<String> {
     //Generate the power set of the string
     for i in 1..powset_size {       //Skip the empty set
         for j in 0..powset_size {
-            //let lshift = usize::checked_shl(1, j as u32).unwrap_or_default();
-            if i & (1 << j) != 0 {    //if i & (1 << j) != 0 {
+            let lshift = usize::checked_shl(1, j as u32).unwrap_or_default();
+            if i & lshift != 0 {    //if i & (1 << j) != 0 {
                 buffer.push(word.chars().nth(j).unwrap());
             }
         }
